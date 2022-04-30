@@ -57,15 +57,15 @@ def test_uploading_files(application):
     uploadFile = os.path.join(Flupload, Filecsv)
     uploadFl = os.path.join(Flupload)
     assert os.path.exists(uploadFl) is True
-    # with application.test_client() as client:
-    #     with open(uploadFile, 'rb') as file:
-    #         data = {
-    #             'file': (file, Filecsv),
-    #
-    #         }
-    #         resp = client.post('songs/upload', data=data, follow_redirects=True)
+    with application.test_client() as client:
+        with open(uploadFile, 'rb') as file:
+            data = {
+                'file': (file, Filecsv),
 
-    # assert resp.status_code == 400
+            }
+            resp = client.post('songs/upload', data=data, follow_redirects=True)
+
+    assert resp.status_code == 400
 
 
 # def user_dashboard_access_approved(client):

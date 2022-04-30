@@ -6,7 +6,7 @@ import flask
 from flask import request, current_app
 
 # from app.logging_config.log_formatters import RequestFormatter
-from app.logging_config.log_formatters import csvfileformatter
+from app.logging_config.log_formatters import *
 from app import config
 
 log_con = flask.Blueprint('log_con', __name__)

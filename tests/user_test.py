@@ -54,8 +54,8 @@ def test_uploading_files(application):
     # root = config.Config.BASE_DIR
     Filecsv = '/music.csv'
     Flupload = config.Config.UPLOAD_FOLDER
-    uploadFile = os.path.join(Flupload, Filecsv)
     uploadFl = os.path.join(Flupload)
+    uploadFile = os.path.join(uploadFl,'../music.csv')
     assert os.path.exists(uploadFl) is True
     with application.test_client() as client:
         with open(uploadFile, 'rb') as file:

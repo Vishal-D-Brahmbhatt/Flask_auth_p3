@@ -1,7 +1,8 @@
 import logging
-
+from app import config
 from app import db
 from app.db.models import User, Song
+import os
 
 
 # from faker import Faker
@@ -26,7 +27,7 @@ def test_adding_user(application):
         # asserting that the user retrieved is correct
         assert user.email == 'vishal@gmail.com'
         # this is how you get a related record ready for insert
-        user.songs = [Song("test", "smap"), Song("test2", "te")]
+        user.songs = [Song("test", "smap", 1964, "Jazz"), Song("test2", "te", 1964, "Jazz")]
         # commit is what saves the songs
         db.session.commit()
         assert db.session.query(Song).count() == 2
@@ -42,3 +43,44 @@ def test_adding_user(application):
         db.session.delete(user)
         assert db.session.query(User).count() == 0
         assert db.session.query(Song).count() == 0
+
+
+def test_uploading_files(application, add_user):
+    log = logging.getLogger("myApp")
+    with application.app_context():
+        assert db.session.query(User).count() == 1
+        assert db.session.query(Song).count() == 0
+
+    root = config.Config.BASE_DIR
+    Filecsv = 'music.csv'
+    filepath = root + '/..app/uploads/' + Filecsv
+    Flupload = config.Config.UPLOAD_FOLDER
+    uploadFile = os.path.join(Flupload, Filecsv)
+    assert os.path.exists(uploadFile) is True
+
+    with application.test_client() as client:
+        with open(uploadFile, 'rb') as file:
+            data = {
+                'file': (file, Filecsv),
+
+            }
+            resp = client.post('songs/upload', data=data, follow_redirects=True)
+
+    assert resp.status_code == 400
+
+
+def user_dashboard_access_approved(client):
+    response = client.get("/dashboard")
+    assert response.status_code == 200
+    return client.get('/dashboard', follow_redirects=True)
+
+
+def user_dashboard_access_deny(client):
+    response = client.get("/dashboard")
+    assert response.status_code == 403
+    return client.get('/dashboard', follow_redirects=False)
+
+
+def test_upload_csvfile_access_denied(client):
+    response = client.get("/upload", follow_redirects=False)
+    assert response.status_code == 404

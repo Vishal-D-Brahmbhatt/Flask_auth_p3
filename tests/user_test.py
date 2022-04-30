@@ -58,12 +58,8 @@ def test_uploading_files(application, client):
     uploadFile = os.path.join(uploadFl,'/music.csv')
     assert os.path.exists(uploadFl) is True
 
-    with open(uploadFile, 'rb') as file:
-        data = {
-            'file': (file, Filecsv),
 
-        }
-        resp = client.post('/songs/upload', data=data, follow_redirects=True)
+    resp = client.post('/songs/upload', data=uploadFile, follow_redirects=True)
 
     assert resp.status_code == 400
 
